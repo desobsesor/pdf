@@ -1,0 +1,29 @@
+{
+  "name": "pdf.cds.net.co",
+  "version": "1.0.0",
+  "description": "CDS PDF",
+  "main": "serverPDF.js",
+  "scripts": {
+    "start": "node serverPDF.js",
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "keywords": [
+    "PDF",
+    "NodeJS",
+    "API"
+  ],
+  "author": "Maya",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "handlebars": "^4.0.6",
+    "html-pdf": "^2.1.0",
+    "http": "0.0.0",
+    "moment": "^2.17.1"
+  }
+}
