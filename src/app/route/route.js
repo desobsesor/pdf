@@ -19,6 +19,7 @@ module.exports = function (app) {
     //#endregion
     //#region METODOS PARA LA GENERACIÓN DEL DOCUMENTO PDF
     async function generarPDFFactura(req, res) {
+        console.log('req.body:', req.body);
         const data = {
             empresa: {
                 nombre: req.body.empresa.empresa,
@@ -128,6 +129,9 @@ module.exports = function (app) {
     //#region ENDPOINTS PARA SERVIR DOCUMENTOS
     app.post('/api/gfactura', function (req, res) {
         generarPDFFactura(req, res);
+    });
+    app.get('/api/inicio', function (req, res) {
+        res.send({msg: 'Servidor iniciado ...'})
     });
     app.post('/api/gcajacontrol', function (req, res) {
         generarPDFCajaControl(req, res);

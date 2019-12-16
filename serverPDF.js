@@ -1,5 +1,5 @@
 //#region CONFIGURACION SERVIDOR
-var port = process.env.PORT || /*Puerto de la aplicacion*/ 5022;
+var port = process.env.PORT || /*Puerto de la aplicacion*/ 5025;
 //#endregion
 //#region DEPENDENCIAS
 const express = require('express');
