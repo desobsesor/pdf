@@ -1,6 +1,6 @@
 const {join} = require('path');
 const moment = require('moment');
-const pdf = require('html-pdf');
+const pdfs = require('html-pdf');
 const {promisify} = require('util');
 const handlebars = require('handlebars');
 const read = promisify(require('fs').readFile);
@@ -18,8 +18,21 @@ module.exports = function (app) {
     }
     //#endregion
     //#region METODOS PARA LA GENERACIÓN DEL DOCUMENTO PDF
+   function generarJSON(req, res) {
+        const data = {
+            empresa: {
+                nombre: req.body.empresa
+            },
+            cliente: {},
+            productos: [],
+            factura: req.body.factura,
+            fecha_creacion: moment().format('DD/MM/YYYY'),
+            fecha_vencimiento: moment().add(14, 'days').format('DD/MM/YYYY')
+        };
+        res.status(200).send({ msg:data });
+    }
+    //#region METODOS PARA LA GENERACIÓN DEL DOCUMENTO PDF
     async function generarPDFFactura(req, res) {
-        console.log('req.body:', req.body);
         const data = {
             empresa: {
                 nombre: req.body.empresa.empresa,
@@ -44,7 +57,6 @@ module.exports = function (app) {
         };
 
         const productos = req.body.productos;
-        console.log('productos:', productos);
 
         for(let i = 0; i<productos.length; i++){
             data.productos.push({
@@ -60,15 +72,16 @@ module.exports = function (app) {
         data.subtotal = formatearNumero(req.body.factura.subtotal);
         data.total =  formatearNumero(req.body.factura.total);
         data.productos.forEach(producto => producto.precio = producto.precio);
+        //const source = await read(join(`${__dirname}/sources/templates/factura.html`), 'utf-8');
         const source = await read(join(`${__dirname}/sources/templates/factura.html`), 'utf-8');
         const template = handlebars.compile(source);
         const html = template(data);
-        const pdf = pdf.create(html, opciones);
+        const pdf = pdfs.create(html, opciones);
         pdf.toFile = promisify(pdf.toFile);
         await pdf.toFile(`${join(__dirname, '/sources/temp/pdf/invoice_'+req.body.empresa.nit+'_'+req.body.cliente.documento+'_'+req.body.factura_no+'.pdf')}`);
         res.status(200).send({
                 path:'http://pdf.cds.net.co/sources/temp/pdf/',
-                // path:'http://localhost:5022/sources/temp/pdf/',
+                //path:'http://localhost:5025/sources/temp/pdf/',
                 file:'invoice_'+req.body.empresa.nit+'_'+req.body.cliente.documento+'_'+req.body.factura_no+'.pdf',
                 msg: 'sources/temp/pdf/invoice_'+req.body.empresa.nit+'_'+req.body.cliente.documento+'_'+req.body.factura_no+'.pdf'});
     }
@@ -127,6 +140,12 @@ module.exports = function (app) {
     }
     //#endregion
     //#region ENDPOINTS PARA SERVIR DOCUMENTOS
+    app.post('/api/gfacturass', function (req, res) {
+        generarJSON(req, res)
+    });
+    app.get('/api/gfacturas', function (req, res) {
+        res.send({msg: req.body})
+    });
     app.post('/api/gfactura', function (req, res) {
         generarPDFFactura(req, res);
     });
